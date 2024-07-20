@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Cryptite <cryptite@gmail.com>
+Date: Sat, 13 Aug 2022 08:58:14 -0500
+Subject: [PATCH] Smooth Teleports
+
+Original code by Cryptite, licensed under MIT
+You can find the original code on https://github.com/Cryptite/Slice
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 60073e8e74cb44a76a952bfe10b6ac24e24cf152..0c5e18d314733920a1b7b4a56d29293a69b1d7c5 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -281,6 +281,7 @@ public class ServerPlayer extends Player {
+     public com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent playerNaturallySpawnedEvent; // Paper - PlayerNaturallySpawnCreaturesEvent
+     public @Nullable String clientBrandName = null; // Paper - Brand support
+     public org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - Add API for quit reason; there are a lot of changes to do if we change all methods leading to the event
++    public boolean smoothWorldTeleport; // Slice
+ 
+     // Paper start - replace player chunk loader
+     private final java.util.concurrent.atomic.AtomicReference<io.papermc.paper.chunk.system.RegionizedPlayerChunkLoader.ViewDistances> viewDistances = new java.util.concurrent.atomic.AtomicReference<>(new io.papermc.paper.chunk.system.RegionizedPlayerChunkLoader.ViewDistances(-1, -1, -1));
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index a002aa85eadd0bcd004fe8f47e7e68c82d8652a8..814d0aa44f25d5e2256b991347daee1239fce6ac 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -956,10 +956,10 @@ public abstract class PlayerList {
+         ServerLevel worldserver2 = entityplayer1.serverLevel();
+         LevelData worlddata = worldserver2.getLevelData();
+ 
+-        entityplayer1.connection.send(new ClientboundRespawnPacket(entityplayer1.createCommonSpawnInfo(worldserver2), (byte) i));
++        if (!entityplayer.smoothWorldTeleport) entityplayer1.connection.send(new ClientboundRespawnPacket(entityplayer1.createCommonSpawnInfo(worldserver2), (byte) i)); // Slice
+         entityplayer1.connection.send(new ClientboundSetChunkCacheRadiusPacket(worldserver1.getWorld().getSendViewDistance())); // Spigot // Paper - replace old player chunk management
+         entityplayer1.connection.send(new ClientboundSetSimulationDistancePacket(worldserver1.getWorld().getSimulationDistance())); // Spigot // Paper - replace old player chunk management
+-        entityplayer1.connection.teleport(CraftLocation.toBukkit(entityplayer1.position(), worldserver2.getWorld(), entityplayer1.getYRot(), entityplayer1.getXRot())); // CraftBukkit
++        if (!entityplayer.smoothWorldTeleport) entityplayer1.connection.teleport(CraftLocation.toBukkit(entityplayer1.position(), worldserver2.getWorld(), entityplayer1.getYRot(), entityplayer1.getXRot())); // CraftBukkit // Slice
+         entityplayer1.connection.send(new ClientboundSetDefaultSpawnPositionPacket(worldserver1.getSharedSpawnPos(), worldserver1.getSharedSpawnAngle()));
+         entityplayer1.connection.send(new ClientboundChangeDifficultyPacket(worlddata.getDifficulty(), worlddata.isDifficultyLocked()));
+         entityplayer1.connection.send(new ClientboundSetExperiencePacket(entityplayer1.experienceProgress, entityplayer1.totalExperience, entityplayer1.experienceLevel));
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 39b25c2478eadd373383a3445a7f27ea30d18550..fed596e3a93920a10737557fc84384d53abf2b43 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1225,6 +1225,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         // Paper end
+     }
+ 
++    // Slice start
++    public void teleportWithoutRespawn(Location location) {
++        ServerPlayer serverPlayer = getHandle();
++        serverPlayer.smoothWorldTeleport = true;
++        teleport(location);
++        serverPlayer.smoothWorldTeleport = false;
++    }
++    // Slice end
++
+     @Override
+     public boolean teleport(Location location, PlayerTeleportEvent.TeleportCause cause) {
+         // Paper start - Teleport API
