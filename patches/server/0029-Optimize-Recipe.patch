@@ -1,0 +1,69 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: log4net <sfclog@gmail.com>
+Date: Sat, 20 Jul 2024 09:50:16 +0700
+Subject: [PATCH] Optimize-Recipe
+
+
+diff --git a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
+index d87124f5356180a37e581febc6141fdc5f1395a7..32d3f4352330f6335b2261e63eabd528270fe24d 100644
+--- a/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
++++ b/src/main/java/net/minecraft/world/item/crafting/RecipeManager.java
+@@ -11,14 +11,9 @@ import com.google.gson.JsonParseException;
+ import com.mojang.datafixers.util.Pair;
+ import com.mojang.logging.LogUtils;
+ import com.mojang.serialization.JsonOps;
+-import java.util.Collection;
+-import java.util.Collections;
+-import java.util.Comparator;
+-import java.util.Iterator;
+-import java.util.List;
+-import java.util.Map;
++
++import java.util.*;
+ import java.util.Map.Entry;
+-import java.util.Optional;
+ import java.util.stream.Collectors;
+ import java.util.stream.Stream;
+ import javax.annotation.Nullable;
+@@ -27,6 +22,7 @@ import net.minecraft.core.NonNullList;
+ import net.minecraft.world.Container;
+ import net.minecraft.world.item.ItemStack;
+ import net.minecraft.world.level.Level;
++import net.sparklypower.sparklypaper.configs.SparklyPaperConfigUtils;
+ import org.slf4j.Logger;
+ 
+ // CraftBukkit start
+@@ -137,7 +133,7 @@ public class RecipeManager extends SimpleJsonResourceReloadListener {
+     }
+ 
+     public <C extends Container, T extends Recipe<C>> List<RecipeHolder<T>> getAllRecipesFor(RecipeType<T> type) {
+-        return List.copyOf(this.byType(type).values());
++         return SparklyPaperConfigUtils.config.getRecipe_optimize() ? new ArrayList<>(this.byType(type).values()) : List.copyOf(this.byType(type).values()); // DivineMC - Carpet-Fixes: RecipeManager Optimize
+     }
+ 
+     public <C extends Container, T extends Recipe<C>> List<RecipeHolder<T>> getRecipesFor(RecipeType<T> type, C inventory, Level world) {
+diff --git a/src/main/kotlin/net/sparklypower/sparklypaper/configs/SparklyPaperConfig.kt b/src/main/kotlin/net/sparklypower/sparklypaper/configs/SparklyPaperConfig.kt
+index 6398c7b40ba82ffc8588eca458ce92c24dc8ac41..fcb9fd4e055e7089a4117a2231b715319c133bf6 100644
+--- a/src/main/kotlin/net/sparklypower/sparklypaper/configs/SparklyPaperConfig.kt
++++ b/src/main/kotlin/net/sparklypower/sparklypaper/configs/SparklyPaperConfig.kt
+@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
+ class SparklyPaperConfig(
+     @SerialName("parallel-world-ticking")
+     val parallelWorldTicking: ParallelWorldTicking,
++    @SerialName("recipe_optimize")
++    val recipe_optimize: Boolean,
+     @SerialName("world-settings")
+     val worldSettings: Map<String, SparklyPaperWorldConfig>
+ ) {
+diff --git a/src/main/kotlin/net/sparklypower/sparklypaper/configs/SparklyPaperConfigUtils.kt b/src/main/kotlin/net/sparklypower/sparklypaper/configs/SparklyPaperConfigUtils.kt
+index ce608ca9640cdea0fe690ef61021355822284cf6..1aa6a659ada4e681a57df339ebb4922beba0f325 100644
+--- a/src/main/kotlin/net/sparklypower/sparklypaper/configs/SparklyPaperConfigUtils.kt
++++ b/src/main/kotlin/net/sparklypower/sparklypaper/configs/SparklyPaperConfigUtils.kt
+@@ -28,6 +28,7 @@ object SparklyPaperConfigUtils {
+                         SparklyPaperConfig.ParallelWorldTicking(
+                             threads = 8
+                         ),
++                        true,
+                         mapOf(
+                             "default" to SparklyPaperWorldConfig(
+                                 skipMapItemDataUpdatesIfMapDoesNotHaveCraftMapRenderer = true,

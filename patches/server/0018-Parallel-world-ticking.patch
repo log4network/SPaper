@@ -1460,7 +1460,7 @@ index 83a39f900551e39d5af6f17a339a386ddee4feef..1f3ae0cc95a7e9ca9380493315ace4e1
          // To ensure nothing weird happens with dimension travelling, do not iterate over new entries...
          // (by dfl iterator() is configured to not iterate over new entries)
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 01797d9791f19dfda4b168218eadeaae97f11eab..b5e4413aae97e5c103c88c5d61347199974e1168 100644
+index 00357d78182b3ff87e3d9a45705b072af56739c8..38b1f1762fd5ccb7f170e0dc5b6ab316839d520c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -441,7 +441,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -1544,7 +1544,7 @@ index 01797d9791f19dfda4b168218eadeaae97f11eab..b5e4413aae97e5c103c88c5d61347199
          getHandle().gameEvent(sourceEntity != null ? ((CraftEntity) sourceEntity).getHandle(): null, net.minecraft.core.registries.BuiltInRegistries.GAME_EVENT.get(org.bukkit.craftbukkit.util.CraftNamespacedKey.toMinecraft(gameEvent.getKey())), org.bukkit.craftbukkit.util.CraftVector.toBlockPos(position));
      }
      // Paper end
-@@ -2479,7 +2486,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -2487,7 +2494,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
      // Paper start
      public java.util.concurrent.CompletableFuture<Chunk> getChunkAtAsync(int x, int z, boolean gen, boolean urgent) {
          warnUnsafeChunk("getting a faraway chunk async", x, z); // Paper
