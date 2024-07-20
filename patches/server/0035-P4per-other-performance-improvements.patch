@@ -5,10 +5,10 @@ Subject: [PATCH] P4per: other performance improvements
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index e73410ee7dd16f5441812265a61a3f3c146eadb5..3d866c47d78fb05fa64cd5cdaa9e43f417040fbf 100644
+index 0f1ffeabbac92e7500ed07914dbbf338abfb1eef..fe2a6666b4aa5b7bfda19b1eef16b16fa4652b3c 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -981,23 +981,23 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -935,23 +935,23 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      // CraftBukkit start
@@ -41,7 +41,7 @@ index e73410ee7dd16f5441812265a61a3f3c146eadb5..3d866c47d78fb05fa64cd5cdaa9e43f4
          if (!hasLoggedStop && isDebugging()) io.papermc.paper.util.TraceUtil.dumpTraceForThread("Server stopped"); // Paper - Debugging
          // Paper start - kill main thread, and kill it hard
          shutdownThread = Thread.currentThread();
-@@ -1430,7 +1430,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1353,7 +1353,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      @Override
      public TickTask wrapRunnable(Runnable runnable) {
          // Paper start - anything that does try to post to main during watchdog crash, run on watchdog
@@ -51,10 +51,10 @@ index e73410ee7dd16f5441812265a61a3f3c146eadb5..3d866c47d78fb05fa64cd5cdaa9e43f4
              runnable = () -> {};
          }
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index c079d3f03887a5c1683ee71433f40c2e26bff7fb..8fb9ffd61b8755c61fa1e3e4f8cc6297c3b6284e 100644
+index 9d0fdae79cc5808a14c0a4a376dc64353e334e0e..d5b9568cd3679fb1bf087b8359838d515ccd632c 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -1947,16 +1947,17 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1796,16 +1796,17 @@ public class ServerLevel extends Level implements WorldGenLevel {
              ServerPlayer entityplayer = (ServerPlayer) iterator.next();
  
              if (entityplayer != null && entityplayer.level() == this && entityplayer.getId() != entityId) {
@@ -77,7 +77,7 @@ index c079d3f03887a5c1683ee71433f40c2e26bff7fb..8fb9ffd61b8755c61fa1e3e4f8cc6297
                      entityplayer.connection.send(new ClientboundBlockDestructionPacket(entityId, pos, progress));
                  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java b/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
-index 13a7fe0f62073df52204034aa122d4c60a46c500..fef41699d5706bc2f6f7f194c54ae8bd57d52e15 100644
+index b25dc23b81687dd4d4e70b3615ffb91f8c03c68b..05cdc3d106ca848fde875c272f22916b36f0a13f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
 @@ -173,10 +173,6 @@ public final class WeakCollection<T> implements Collection<T> {
