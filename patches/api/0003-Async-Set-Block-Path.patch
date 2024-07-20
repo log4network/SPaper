@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: log4net <sfclog@gmail.com>
+Date: Sun, 23 Jun 2024 13:29:17 +0700
+Subject: [PATCH] Async-Set-Block-Path
+
+
+diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
+index e6f66d70d024cf4f0536a5bf8e51bf7b306335df..8471033683a17c766737037b77238e213896fdb2 100644
+--- a/src/main/java/org/bukkit/World.java
++++ b/src/main/java/org/bukkit/World.java
+@@ -73,6 +73,8 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
+      */
+     int getChunkCount();
+ 
++    void setBlockAsync(int x, int y, int z, BlockData blockData, boolean physics);
++
+     /**
+      * @return The amount of Players in this world
+      */
