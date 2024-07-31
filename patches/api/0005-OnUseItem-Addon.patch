@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: log4net <sfclog@gmail.com>
+Date: Tue, 30 Jul 2024 13:51:27 +0700
+Subject: [PATCH] OnUseItem-Addon
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index d048ae07cc33fd77d128cc1ebf88b0804969fa3c..63287249daadf064fe7325549192576d0ba2af30 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -125,6 +125,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+     public void setDisplayName(@Nullable String name);
+ 
+     // Paper start
++
++    void sendUse(ItemStack item, boolean right);
++
+     /**
+      * Sets the name that is shown on the in-game player list.
+      * <p>

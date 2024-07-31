@@ -1,0 +1,80 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: log4net <sfclog@gmail.com>
+Date: Tue, 30 Jul 2024 13:50:59 +0700
+Subject: [PATCH] OnUseItem-Addon
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 96c567c706cd3623e396df4ec7fec2dba8202857..2b973ec1983730b203151377d57d651ee402be66 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -892,6 +892,7 @@ public class ServerPlayer extends Player {
+ 
+     }
+ 
++
+     private void updateScoreForCriteria(ObjectiveCriteria criterion, int score) {
+         // CraftBukkit - Use our scores instead
+         this.level().getCraftServer().getScoreboardManager().forAllObjectives(criterion, this, (scoreaccess) -> {
+@@ -909,7 +910,6 @@ public class ServerPlayer extends Player {
+                     event.getEntity().getInventory().addItem(itemStack);
+                 }
+             }
+-
+             return;
+         }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 6619925deab7723318cde7e0de2a85e255936681..d75a70adcac2cb97f7cbf44796913304018ef465 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -83,6 +83,7 @@ import net.minecraft.server.level.ServerPlayer;
+ import net.minecraft.server.network.ServerGamePacketListenerImpl;
+ import net.minecraft.server.players.UserWhiteListEntry;
+ import net.minecraft.sounds.SoundEvent;
++import net.minecraft.world.InteractionHand;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+ import net.minecraft.world.entity.ai.attributes.AttributeMap;
+@@ -148,7 +149,6 @@ import org.bukkit.craftbukkit.map.CraftMapView;
+ import org.bukkit.craftbukkit.map.RenderData;
+ import org.bukkit.craftbukkit.potion.CraftPotionEffectType;
+ import org.bukkit.craftbukkit.potion.CraftPotionUtil;
+-import org.bukkit.craftbukkit.profile.CraftPlayerProfile;
+ import org.bukkit.craftbukkit.scoreboard.CraftScoreboard;
+ import org.bukkit.craftbukkit.util.CraftChatMessage;
+ import org.bukkit.craftbukkit.util.CraftLocation;
+@@ -161,7 +161,6 @@ import org.bukkit.event.player.PlayerExpCooldownChangeEvent;
+ import org.bukkit.event.player.PlayerHideEntityEvent;
+ import org.bukkit.event.player.PlayerRegisterChannelEvent;
+ import org.bukkit.event.player.PlayerShowEntityEvent;
+-import org.bukkit.event.player.PlayerSpawnChangeEvent;
+ import org.bukkit.event.player.PlayerTeleportEvent;
+ import org.bukkit.event.player.PlayerUnregisterChannelEvent;
+ import org.bukkit.inventory.EquipmentSlot;
+@@ -174,7 +173,6 @@ import org.bukkit.plugin.Plugin;
+ import org.bukkit.plugin.messaging.StandardMessenger;
+ import org.bukkit.potion.PotionEffect;
+ import org.bukkit.potion.PotionEffectType;
+-import org.bukkit.profile.PlayerProfile;
+ import org.bukkit.scoreboard.Scoreboard;
+ import org.jetbrains.annotations.NotNull;
+ 
+@@ -452,11 +450,17 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return this.getHandle().displayName;
+     }
+ 
++
+     @Override
+     public void setDisplayName(final String name) {
+         this.getHandle().adventure$displayName = name != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(name) : net.kyori.adventure.text.Component.text(this.getName()); // Paper
+         this.getHandle().displayName = name == null ? this.getName() : name;
+     }
++    @Override
++    public void sendUse(ItemStack item, boolean right) {
++        ServerPlayer serverPlayer = getHandle();
++        getHandle().gameMode.useItem(serverPlayer,getHandle().level(),net.minecraft.world.item.ItemStack.fromBukkitCopy(item), right ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
++    }
+ 
+     // Paper start
+     @Override
