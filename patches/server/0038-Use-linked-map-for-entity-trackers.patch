@@ -13,7 +13,7 @@ As part of: VMP (https://github.com/RelativityMC/VMP-fabric)
 Licensed under: MIT (https://opensource.org/licenses/MIT)
 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 43723cefd08830c6316f668cf8438a29f01cdcdd..1d6b75467166def7f0573f5cabe19aafb18de3c7 100644
+index e2906f5d9dc135277d0efc38c264bf32ba3623e5..d30bb60df34a11b60b18cda117b7ed2f3c8ae606 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -14,6 +14,7 @@ import com.mojang.datafixers.util.Either;
@@ -24,7 +24,7 @@ index 43723cefd08830c6316f668cf8438a29f01cdcdd..1d6b75467166def7f0573f5cabe19aaf
  import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
  import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
  import it.unimi.dsi.fastutil.longs.Long2ByteMap;
-@@ -213,7 +214,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -251,7 +252,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          // Paper - rewrite chunk system
          this.tickingGenerated = new AtomicInteger();
          this.playerMap = new PlayerMap();
